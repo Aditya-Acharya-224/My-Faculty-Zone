@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block sidebar %}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-4 card shadow p-4 border-0">
+        <h3 class="text-center mb-4" style="color: var(--deep-space-blue);">Join FacultyZone</h3>
+        <p class="text-center text-muted">Create your student account</p>
+        
+        <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="mb-3">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% if field.help_text %}
+                        <small class="text-muted d-block">{{ field.help_text }}</small>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <p class="text-danger small">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary w-100 py-2">Create Account</button>
+        </form>
+        
+        <div class="text-center mt-3">
+            <span>Already have an account? <a href="{% url 'login' %}">Login</a></span>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Quick fix to make Django's default form look nice with Bootstrap */
+    input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; }
+</style>
+{% endblock %}

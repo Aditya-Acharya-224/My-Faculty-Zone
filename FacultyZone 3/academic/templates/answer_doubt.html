@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-success text-white">
+            <h4 class="mb-0">Solve Doubt: {{ doubt.subject }}</h4>
+        </div>
+        <div class="card-body">
+            <p class="lead"><strong>Question:</strong> {{ doubt.question }}</p>
+            <p class="text-muted small">Asked by {{ doubt.student.username }}</p>
+            <hr>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Your Response</label>
+                    <textarea name="answer" class="form-control" rows="6" placeholder="Explain the solution here..." required></textarea>
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-success">Post Answer</button>
+                    <a href="{% url 'doubt_room' %}" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

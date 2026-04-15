@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4"><i class="bi bi-mortarboard"></i> Course Completion Status</h2>
+    
+    {% for subject in subjects %}
+    <div class="card shadow-sm mb-4 border-0">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">{{ subject.name }}</h5>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <div class="d-flex justify-content-between mb-1">
+                    <span>Overall Progress</span>
+                    <span class="fw-bold">{{ subject.progress_percentage }}%</span>
+                </div>
+                <div class="progress" style="height: 10px;">
+                    <div class="progress-bar bg-success" role="progressbar" 
+                         style="width: {{ subject.progress_percentage }}%;"></div>
+                </div>
+            </div>
+
+            <ul class="list-group list-group-flush">
+                {% for item in subject.items.all %}
+                <li class="list-group-item d-flex justify-content-between align-items-center {% if item.is_subtopic %}ps-5 small text-muted{% else %}fw-bold{% endif %}">
+                    <span>
+                        {% if item.is_completed %}
+                            <i class="bi bi-check-circle-fill text-success me-2"></i>
+                        {% else %}
+                            <i class="bi bi-circle me-2 text-secondary"></i>
+                        {% endif %}
+                        {{ item.topic_name }}
+                    </span>
+                    {% if item.is_completed %}
+                        <span class="badge bg-light text-success border border-success">Completed</span>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    {% empty %}
+    <div class="alert alert-info">No subjects have been assigned to the syllabus tracker yet.</div>
+    {% endfor %}
+</div>
+{% endblock %}

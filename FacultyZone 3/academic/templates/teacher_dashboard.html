@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4">Faculty Portal: Welcome, Prof. {{ user.username }}</h2>
+    
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card border-success shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title text-success">Academic Management</h5>
+                    <div class="d-grid gap-2 mt-3">
+                        <a href="{% url 'timetable' %}" class="btn btn-outline-success">Manage Timetable</a>
+                        <a href="{% url 'upload' %}" class="btn btn-outline-success">Upload Materials</a>
+                        <a href="{% url 'teacher_feedback' %}" class="btn btn-outline-success">View My Reviews</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-success text-white">Student Doubts to Solve</div>
+                <div class="card-body">
+                    <p class="text-muted">New student queries will appear here.</p>
+                    <a href="{% url 'doubt_room' %}" class="btn btn-sm btn-primary">Go to Doubt Room</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

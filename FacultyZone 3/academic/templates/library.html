@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold"><i class="bi bi-folder2-open me-2 text-primary"></i>Digital Library</h3>
+        {% if user.is_staff %}
+        <a href="{% url 'upload' %}" class="btn btn-primary shadow-sm"><i class="bi bi-upload me-2"></i>Upload Material</a>
+        {% endif %}
+    </div>
+
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm p-3 mb-4">
+                <h6 class="fw-bold mb-3 text-muted text-uppercase small">Categories</h6>
+                <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist">
+                    <button class="nav-link active d-flex justify-content-between align-items-center mb-2" data-bs-toggle="pill" data-bs-target="#tab-books" type="button">
+                        <span><i class="bi bi-book me-2"></i>Books</span>
+                        <span class="badge rounded-pill bg-primary">{{ books.count }}</span>
+                    </button>
+                    <button class="nav-link d-flex justify-content-between align-items-center mb-2" data-bs-toggle="pill" data-bs-target="#tab-notes" type="button">
+                        <span><i class="bi bi-journal-text me-2"></i>Notes</span>
+                        <span class="badge rounded-pill bg-info text-dark">{{ notes.count }}</span>
+                    </button>
+                    <button class="nav-link d-flex justify-content-between align-items-center mb-2" data-bs-toggle="pill" data-bs-target="#tab-pyqs" type="button">
+                        <span><i class="bi bi-question-circle me-2"></i>PYQs</span>
+                        <span class="badge rounded-pill bg-secondary">{{ pyqs.count }}</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            <div class="tab-content" id="v-pills-tabContent">
+                
+                <div class="tab-pane fade show active" id="tab-books">
+                    <div class="row g-3">
+                        {% for resource in books %}
+                            {% include "includes/resource_card.html" with res=resource %}
+                        {% empty %}
+                            <div class="text-center py-5"><p class="text-muted">No Books found.</p></div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab-notes">
+                    <div class="row g-3">
+                        {% for resource in notes %}
+                            {% include "includes/resource_card.html" with res=resource %}
+                        {% empty %}
+                            <div class="text-center py-5"><p class="text-muted">No Notes found.</p></div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab-pyqs">
+                    <div class="row g-3">
+                        {% for resource in pyqs %}
+                            {% include "includes/resource_card.html" with res=resource %}
+                        {% empty %}
+                            <div class="text-center py-5"><p class="text-muted">No PYQs found.</p></div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .hover-shadow:hover { transform: translateY(-3px); transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    .nav-pills .nav-link { text-align: left; color: #495057; border-radius: 8px; }
+    .nav-pills .nav-link.active { background-color: #0d6efd; color: white; }
+</style>
+{% endblock %}

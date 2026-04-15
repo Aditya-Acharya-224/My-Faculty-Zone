@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4">Student Portal: Welcome, {{ user.username }}</h2>
+    
+    <div class="row g-4">
+        <div class="col-md-8">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-primary text-white">Latest Notices</div>
+                <div class="card-body">
+                    {% for notice in notices %}
+                        <div class="mb-3 border-bottom pb-2">
+                            <h5>{{ notice.title }}</h5>
+                            <p class="text-muted small">{{ notice.date_posted }}</p>
+                            <p>{{ notice.content }}</p>
+                        </div>
+                    {% empty %}
+                        <p>No notices yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="list-group shadow-sm">
+                <a href="{% url 'library' %}" class="list-group-item list-group-item-action py-3">
+                    <i class="bi bi-book me-2"></i> Digital Library
+                </a>
+                <a href="{% url 'doubt_room' %}" class="list-group-item list-group-item-action py-3">
+                    <i class="bi bi-question-circle me-2"></i> Ask a Doubt
+                </a>
+                <a href="{% url 'submit_feedback' %}" class="list-group-item list-group-item-action py-3">
+                    <i class="bi bi-star me-2"></i> Rate Faculty
+                </a>
+                <a href="{% url 'syllabus' %}" class="list-group-item list-group-item-action py-3">
+                    <i class="bi bi-bar-chart me-2"></i> Course Progress
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Welcome to My Faculty Zone</h1>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white fw-bold" style="color: var(--baltic-blue);">Latest Announcements</div>
+            <div class="card-body">
+                <p class="text-muted small">Updated 2 hours ago</p>
+                <h5>Mid-term Examination Schedule Published</h5>
+                <p>Please check the Digital Library under 'Academic Records' for the full PDF.</p>
+                <a href="#" class="btn btn-sm btn-outline-primary">View All Notices</a>
+            </div><div class="card shadow-sm h-100">
+    <div class="card-header bg-white fw-bold" style="color: var(--baltic-blue);">Latest Announcements</div>
+    <div class="card-body">
+        {% for notice in notices %}
+            <div class="mb-3 border-bottom pb-2">
+                <p class="text-muted small mb-1">{{ notice.date_posted|date:"M d, Y" }}</p>
+                <h5>{{ notice.title }}</h5>
+                <p>{{ notice.content|truncatewords:20 }}</p>
+            </div>
+        {% empty %}
+            <p>No announcements yet.</p>
+        {% endfor %}
+        <a href="#" class="btn btn-sm btn-outline-primary">View All Notices</a>
+    </div>
+</div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm card-custom">
+            <div class="card-body text-center">
+                <h5>Ask a Doubt</h5>
+                <p class="small">Directly contact your professors.</p>
+                <button class="btn btn-primary w-100">Open Room</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-3">
+        <div class="card p-3 shadow-sm text-center border-0">
+            <div class="fw-bold">PYQs</div>
+            <div class="display-6">120+</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3 shadow-sm text-center border-0">
+            <div class="fw-bold">Syllabus</div>
+            <div class="text-success">85% Done</div>
+        </div>
+    </div>
+</div>
+{% endblock %}

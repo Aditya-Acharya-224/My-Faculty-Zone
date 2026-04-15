@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid py-4" style="max-width: 1000px;">
+    
+    <div class="card shadow-sm border-0 mb-4 bg-dark text-white">
+        <div class="card-body d-flex justify-content-between align-items-center p-4">
+            <div>
+                <h2 class="fw-bold mb-1"><i class="bi bi-card-checklist me-2"></i>Syllabus Tracker</h2>
+            </div>
+            
+            {% if user.is_staff %}
+            <button class="btn btn-primary btn-lg shadow" type="button" data-bs-toggle="collapse" data-bs-target="#addTopicCollapse">
+                <i class="bi bi-plus-lg me-2"></i>ADD TOPIC
+            </button>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if user.is_staff %}
+    <div class="collapse mb-4" id="addTopicCollapse">
+        <div class="card card-body border-primary shadow-sm p-4">
+            <h5 class="fw-bold mb-3">Create New Syllabus Item</h5>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Select Subject</label>
+                        <select name="subject_id" class="form-select border-primary" required>
+                            {% for s in subjects %}
+                                <option value="{{ s.id }}">{{ s.name }}</option>
+                            {% empty %}
+                                <option disabled>No subjects assigned to you in Admin!</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label small fw-bold">Topic/Sub-topic Name</label>
+                        <input type="text" name="topic_name" class="form-control border-primary" placeholder="e.g. Unit 1: Introduction" required>
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end gap-2">
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" name="is_subtopic" id="isSubCheck">
+                            <label class="form-check-label small" for="isSubCheck">Is Sub-topic?</label>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100 fw-bold">SAVE ITEM</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+
+    {% for subject in subjects %}
+    <div class="card shadow-sm border-0 mb-4 overflow-hidden">
+        <div class="card-header bg-white py-3 border-bottom border-light">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h4 class="fw-bold text-dark mb-0">{{ subject.name }}</h4>
+                <div class="text-end">
+                    <span class="fw-bold text-primary fs-5" id="perc-text-{{ subject.id }}">{{ subject.get_progress }}%</span>
+                    <small class="text-muted d-block">Course Completion</small>
+                </div>
+            </div>
+            <div class="progress" style="height: 10px; border-radius: 20px;">
+                <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" 
+                     id="progress-bar-{{ subject.id }}" 
+                     style="width: {{ subject.get_progress }}%"></div>
+            </div>
+        </div>
+
+        <div class="list-group list-group-flush">
+            {% for item in subject.items.all %}
+            <div class="list-group-item d-flex justify-content-between align-items-center py-3 px-4 {% if item.is_subtopic %}ps-5 bg-light-subtle{% endif %}">
+                <div class="d-flex align-items-center">
+                    {% if item.is_subtopic %}
+                        <i class="bi bi-arrow-return-right text-muted me-3"></i>
+                    {% else %}
+                        <i class="bi bi-journal-text text-primary me-3 fs-5"></i>
+                    {% endif %}
+                    
+                    <span class="fs-6 {% if item.is_completed %}text-decoration-line-through text-muted{% else %}fw-semibold{% endif %}" 
+                          id="topic-text-{{ item.id }}">
+                        {{ item.topic_name }}
+                    </span>
+                </div>
+
+                {% if user.is_staff %}
+                <div class="form-check form-switch">
+                    <input class="form-check-input fs-4" type="checkbox" role="switch" 
+                           {% if item.is_completed %}checked{% endif %}
+                           onclick="toggleSyllabusItem({{ item.id }}, {{ subject.id }})">
+                </div>
+                {% else %}
+                <span>
+                    {% if item.is_completed %}
+                        <i class="bi bi-patch-check-fill text-success fs-5"></i>
+                    {% else %}
+                        <i class="bi bi-circle text-muted fs-5"></i>
+                    {% endif %}
+                </span>
+                {% endif %}
+            </div>
+            {% empty %}
+            <div class="p-4 text-center text-muted italic">No topics added yet for this subject.</div>
+            {% endfor %}
+        </div>
+    </div>
+    {% empty %}
+    <div class="text-center py-5 bg-white rounded shadow-sm">
+        <i class="bi bi-folder-x display-1 text-muted"></i>
+        <h4 class="mt-3 text-muted">No Subjects Found</h4>
+        <p>Ensure subjects are created and assigned to you in the admin panel.</p>
+    </div>
+    {% endfor %}
+
+</div>
+
+<script>
+function toggleSyllabusItem(itemId, subjId) {
+    fetch(`/syllabus/toggle/${itemId}/`, {
+        method: 'POST',
+        headers: { 
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            // Update Progress Bar
+            document.getElementById(`progress-bar-${subjId}`).style.width = data.new_progress + '%';
+            document.getElementById(`perc-text-${subjId}`).innerText = data.new_progress + '%';
+            
+            // Update Text Styling
+            const textElement = document.getElementById(`topic-text-${itemId}`);
+            if (data.is_completed) {
+                textElement.classList.add('text-decoration-line-through', 'text-muted');
+                textElement.classList.remove('fw-semibold');
+            } else {
+                textElement.classList.remove('text-decoration-line-through', 'text-muted');
+                textElement.classList.add('fw-semibold');
+            }
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+</script>
+
+<style>
+    .bg-light-subtle { background-color: #f8f9fa; }
+    .form-check-input:checked { background-color: #198754; border-color: #198754; }
+    .progress { background-color: #e9ecef; }
+    .list-group-item { transition: background-color 0.2s ease; border-left: 4px solid transparent; }
+    .list-group-item:hover { background-color: #f1f3f5; border-left: 4px solid #0d6efd; }
+</style>
+{% endblock %}

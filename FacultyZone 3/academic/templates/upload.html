@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-4">
+    <div class="card shadow-sm mx-auto" style="max-width: 500px;">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Upload Academic Resource</h5>
+        </div>
+        <div class="card-body">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label">Resource Title</label>
+                    <input type="text" name="title" class="form-control" placeholder="e.g. Unit 1 Notes" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Category</label>
+                    <select name="category" class="form-select">
+                        <option value="NOTE">Notes</option>
+                        <option value="BOOK">Books</option>
+                        <option value="PYQ">Previous Year Questions</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Select File (PDF/Doc)</label>
+                    <input type="file" name="file" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Upload to Library</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

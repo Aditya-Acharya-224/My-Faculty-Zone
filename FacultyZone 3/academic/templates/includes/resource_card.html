@@ -1,0 +1,9 @@
+<div class="col-md-4">
+    <div class="card hover-shadow border-0">
+        <div class="card-body">
+            <h6 class="card-title">{{ res.title }}</h6>
+            <p class="card-text small text-muted mb-2">Uploaded by: {{ res.uploaded_by.username }} • {{ res.uploaded_at|date:"M d, Y" }}</p>
+            <a href="{{ res.file.url }}" target="_blank" class="btn btn-sm btn-outline-primary">Open / Download</a>
+        </div>
+    </div>
+</div>

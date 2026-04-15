@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold">Doubt Resolution Center</h3>
+        {% if not user.is_staff %}
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#askModal">Ask Question</button>
+        {% endif %}
+    </div>
+
+    <div class="row">
+        {% for doubt in doubts %}
+        <div class="col-md-12 mb-4">
+            <div class="card border-0 shadow-sm overflow-hidden">
+                <div class="row g-0">
+                    <div class="col-md-1 {% if doubt.is_resolved %}bg-success{% else %}bg-warning{% endif %} d-flex align-items-center justify-content-center text-white">
+                        <i class="bi {% if doubt.is_resolved %}bi-check-all{% else %}bi-clock-history{% endif %} fs-2"></i>
+                    </div>
+                    <div class="col-md-11 p-4">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <h5 class="fw-bold text-dark">{{ doubt.subject }}</h5>
+                            <span class="text-muted small">{{ doubt.created_at|timesince }} ago</span>
+                        </div>
+                        <p class="text-secondary mt-2 mb-3">{{ doubt.question }}</p>
+                        
+                        {% if doubt.answer %}
+                        <div class="bg-light p-3 rounded-3 border-start border-3 border-success">
+                            <p class="mb-1 fw-bold text-success"><i class="bi bi-reply-fill me-2"></i>Faculty Response:</p>
+                            <p class="mb-0">{{ doubt.answer }}</p>
+                        </div>
+                        {% elif user.is_staff %}
+                        <a href="{% url 'answer_doubt' doubt.id %}" class="btn btn-sm btn-success">Solve Now</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="modal fade" id="askModal" tabindex="-1">
+    <div class="modal-dialog">
+        <form method="POST" class="modal-content">
+            {% csrf_token %}
+            <div class="modal-header"><h5>Post your Doubt</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+                <input type="text" name="subject" class="form-control mb-3" placeholder="Subject Name" required>
+                <textarea name="question" class="form-control" rows="4" placeholder="Be specific with your question..." required></textarea>
+            </div>
+            <div class="modal-footer"><button type="submit" class="btn btn-primary w-100">Submit to Faculty</button></div>
+        </form>
+    </div>
+</div>
+{% endblock %}

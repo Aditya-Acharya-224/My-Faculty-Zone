@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-fluid">
+    <div class="card bg-white p-4 mb-4 border-bottom border-primary border-4 shadow-sm">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h3 class="fw-bold mb-1">Syllabus Master Checklist</h3>
+                <p class="text-muted mb-0">Update topics as you finish teaching them.</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <button class="btn btn-primary px-4 py-2 fw-bold" data-bs-toggle="collapse" data-bs-target="#addTopicForm">
+                    <i class="bi bi-plus-lg me-2"></i>NEW TOPIC
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="collapse mb-4" id="addTopicForm">
+        <div class="card p-4 border-primary shadow">
+            <form method="POST" class="row g-3">
+                {% csrf_token %}
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">Select Subject</label>
+                    <select name="subject_id" class="form-select border-primary" required>
+                        {% for subj in subjects %}
+                        <option value="{{ subj.id }}">{{ subj.name }}</option>
+                        {% empty %}
+                        <option disabled>No subjects assigned to you.</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label fw-bold">Topic Name</label>
+                    <input type="text" name="topic_name" class="form-control border-primary" required>
+                </div>
+                <div class="col-md-3 d-flex align-items-end gap-2">
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="is_subtopic" id="subCheck">
+                        <label class="form-check-label" for="subCheck">Sub-topic</label>
+                    </div>
+                    <button type="submit" class="btn btn-success flex-grow-1">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% for subject in subjects %}
+    <div class="card mb-4">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold mb-0 text-primary">{{ subject.name }}</h5>
+            <div class="progress w-25" style="height: 12px;">
+                <div class="progress-bar bg-primary" id="prog-bar-{{ subject.id }}" style="width: {{ subject.progress_percentage }}%"></div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="list-group list-group-flush">
+                {% for item in subject.items.all %}
+                <label class="list-group-item d-flex justify-content-between align-items-center py-3 px-4 {% if item.is_subtopic %}ps-5 bg-light{% endif %}">
+                    <span>
+                        {% if not item.is_subtopic %}<i class="bi bi-bookmark-fill me-3 text-secondary"></i>{% endif %}
+                        {{ item.topic_name }}
+                    </span>
+                    <input type="checkbox" class="form-check-input fs-5 border-primary" 
+                           {% if item.is_completed %}checked{% endif %}
+                           onclick="toggleItem({{ item.id }}, {{ subject.id }})">
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+function toggleItem(itemId, subjId) {
+    fetch(`/syllabus/toggle/${itemId}/`, {
+        method: 'POST',
+        headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById(`prog-bar-${subjId}`).style.width = data.progress + '%';
+    });
+}
+</script>
+{% endblock %}
